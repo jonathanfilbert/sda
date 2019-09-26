@@ -2,6 +2,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Arrays;
 
 /**
  * Tp1
@@ -186,12 +187,11 @@ public class Tp1 {
             }
         }
         // Outputs the result
-        bw.write("haha");
-        bw.flush();
+        bw.write(Arrays.asList());
     }
 
     // Itung algonya
-    public static void countPermutation(int[] chipsList, int target){
+    public static void countPermutation(int[] chipsList, int target, int[] donutQuantity){
         // TODO
         bw.write("hello");
         bw.flush();
