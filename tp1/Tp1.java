@@ -23,7 +23,7 @@ class Donut{
     }
 
     public String toString(){
-        return(String.format("{Nama: %s, Jumlah Stock: %d, Nilai Choco Chips: %d  }", this.namaDonut,this.jumlahStok, this.nilaiChocoChips));
+        return(String.format("{Nama: %s, Jumlah Stock: %d, Chips: %d  }", this.namaDonut,this.jumlahStok, this.nilaiChocoChips));
     }
 
     int getStock(){
@@ -35,11 +35,13 @@ class Donut{
     }
 
     void recieveStock(int stock){
-        this.jumlahStok +=stock;
+        this.jumlahStok += stock;
     }
 
     void transferStock(int stock){
-        this.jumlahStok -= stock;
+        if(this.jumlahStok > 0){
+            this.jumlahStok -= stock;
+        }
     }
 }
 
@@ -62,6 +64,10 @@ class DonutStore {
 
     String getNama(){
         return this.nama;
+    }
+
+    boolean getStatus(){
+        return this.sedangBuka;
     }
 
     void bukaTutupToko(boolean status){
@@ -87,7 +93,7 @@ class DonutStore {
             // Kalo chips nya sama, berhasil
             if(this.stockDonut.get(jenisDonut).getChocoChips() == chipsRestock){
                 // Tambahin stock nya
-                this.stockDonut.get(jenisDonut).transferStock(chipsRestock);
+                this.stockDonut.get(jenisDonut).recieveStock(chipsRestock);
             }
         }
     }
@@ -95,29 +101,35 @@ class DonutStore {
     // Meledak
     void duarDonut(String jenisDonut, int jumlahMeledak){
         // Kurangin stocknya
-        if(this.stockDonut.get(jenisDonut).getStock() > 0){
-            // kurangin stock nya by 1
+            // kurangin stock nya
             this.stockDonut.get(jenisDonut).transferStock(jumlahMeledak);
         }
-    }
 
     // Transfer Donut
     void transferDonut(DonutStore tokoTujuan, String jenisDonut, int jumlahDonut){
         // If the name of the donut is NOT in the destination, transfer the donut
         if(tokoTujuan.stockDonut.get(jenisDonut) == null){
             // Transfer the donut
-            tokoTujuan.stockDonut.get(jenisDonut).recieveStock(jumlahDonut);
+            tokoTujuan.addDonut(jenisDonut, new Donut(jenisDonut, jumlahDonut, this.stockDonut.get(jenisDonut).getChocoChips()));
             // Kurangin stock awalnya
             this.stockDonut.get(jenisDonut).transferStock(jumlahDonut);
         }
         // Kalo namanya ada
         else{
+            // Kalo stock nya nol
+            if(this.stockDonut.get(jenisDonut).getStock() == 0){
+                tokoTujuan.stockDonut.get(jenisDonut).recieveStock(jumlahDonut);
+                this.stockDonut.get(jenisDonut).transferStock(jumlahDonut);
+            }
+            // Kalo stock nya ga nol, check chips
+            else{
             // Kalo chips nya sama
             if(tokoTujuan.stockDonut.get(jenisDonut).getChocoChips() == this.stockDonut.get(jenisDonut).getChocoChips()){
                 // Transfer the donut
                 tokoTujuan.stockDonut.get(jenisDonut).recieveStock(jumlahDonut);
                 // Kurangin stock awalnya
                 this.stockDonut.get(jenisDonut).transferStock(jumlahDonut);
+            }
             }
         }
     }
@@ -127,6 +139,7 @@ public class Tp1 {
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        ArrayList<Long> jawaban = new ArrayList<Long>();
         // Make an map of Donut Stores
         Map<String,DonutStore> donutStores = new HashMap<String,DonutStore>();
         // Takes the amount of donut stores
@@ -152,22 +165,37 @@ public class Tp1 {
         for(int i = 0; i<jumlahHari;i++){
             // Baca Xi
             int jumlahTokoBuka = Integer.parseInt(br.readLine());
-            String[] namaTokoBuka = br.readLine().split(" ");
-            // Iterate setiap tokobuka
-            for(int j=0;j<namaTokoBuka.length;j++){
-                // Set stores to open
-                donutStores.get(namaTokoBuka[j]).bukaTutupToko(true);
+            if(jumlahTokoBuka > 0){
+                String[] namaTokoBuka = br.readLine().split(" ");
+                // Iterate setiap tokobuka
+                for(int j=0;j<namaTokoBuka.length;j++){
+                    // Set stores to open
+                    donutStores.get(namaTokoBuka[j]).bukaTutupToko(true);
+                }
             }
             // Baca Ti dari Target Ti
             int targetChocoChips = Integer.parseInt(br.readLine().split(" ")[1]);
 
-            // ITUNG ALGO NYAA
-            // countPermutation();
-            // PRINT LIST TOKO DONUT
-            bw.write(donutStores.toString());
-            bw.write("\n");
-            bw.flush();
-            // PANGGIL FUNCTION
+            // Bikin array semua quantity dan chips donut
+            ArrayList<Integer> quantityArray = new ArrayList<Integer>();
+            ArrayList<Integer> chipArray = new ArrayList<Integer>();
+
+            // Iterate semua toko
+            for(Map.Entry<String, DonutStore> toko : donutStores.entrySet()){
+                // Kalo tokonya buka
+                if(toko.getValue().getStatus() == true){
+                    // Iterate semua donat di toko itu
+                    for(Map.Entry<String, Donut> donat : toko.getValue().stockDonut.entrySet()){
+                        // Add ke quantity array
+                        quantityArray.add(donat.getValue().getStock());
+                        // Add semua chips ke chipArray
+                        chipArray.add(donat.getValue().getChocoChips());
+                    }
+                }
+            }
+            // Itung
+            long result = countPermutation(chipArray, targetChocoChips, quantityArray, 0) % 1000000007;
+            jawaban.add(result);
 
             // Baca Duar
             int jumlahDuar = Integer.parseInt(br.readLine().split(" ")[1]);
@@ -196,20 +224,21 @@ public class Tp1 {
                 // Transfer
                 donutStores.get(detailTransfer[0]).transferDonut(donutStores.get(detailTransfer[1]), detailTransfer[2], Integer.parseInt(detailTransfer[3]));
             }
-            // Tes Tulis
-
-            bw.write(donutStores.toString());
-            bw.write("\n");
-            bw.flush();
 
             // Akhir hari. Set semua toko jadi tutup
             for(Map.Entry<String,DonutStore> entry : donutStores.entrySet()){
                 entry.getValue().bukaTutupToko(false);
             }
         }
+        // Loop through the answer dan print
+        for(int i = 0; i< jawaban.size();i++){
+            bw.write(Long.toString(jawaban.get(i)));
+            bw.write("\n");
+            bw.flush();
+        }
     }
     // Itung algonya
-    public static void countPermutation(int[] chipsList, int target, int[] donutQuantity, int counter){
+    public static long countPermutation(ArrayList<Integer> chipsList, int target, ArrayList<Integer> donutQuantity, int counter){
         // TODO
         // If (counter < donutQuantity.length):
             // base case if(target == 0): return 1
@@ -217,5 +246,32 @@ public class Tp1 {
             // else
                 // iterate donut quantity
                 // recursive countPermutation(chipList,target-(chipList[counter]*i),donutQuantity,counter+1)
+        int result = 0;
+        // Kalo target < 0 return 0
+        if(target < 0){
+            return 0;
+        }
+        // Another target 0 return 1
+        else if(target == 0){
+            return 1;
+        }
+        // Recursive case
+        // Kalo target masih > 0
+        else{
+            if(counter < donutQuantity.size()){
+                            // Iterate semua donat
+            for(int i = 0; i<=donutQuantity.get(counter);i++){
+                // Kalo counter udah diatas length, break
+                if(counter >= donutQuantity.size()){
+                    break;
+                }
+                // Kalo belom, terusss
+                else{
+                    result += countPermutation(chipsList, target - (chipsList.get(counter)*i), donutQuantity, counter+1);
+            }
+        }
+            }
+        }
+        return result;
     }
 }
