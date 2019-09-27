@@ -1,8 +1,11 @@
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Arrays;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 
 /**
  * Tp1
@@ -17,6 +20,10 @@ class Donut{
         this.namaDonut = namaDonut;
         this.jumlahStok = jumlahStok;
         this.nilaiChocoChips = nilaiChocoChips;
+    }
+
+    public String toString(){
+        return(String.format("{Nama: %s, Jumlah Stock: %d, Nilai Choco Chips: %d  }", this.namaDonut,this.jumlahStok, this.nilaiChocoChips));
     }
 
     int getStock(){
@@ -47,6 +54,10 @@ class DonutStore {
     public DonutStore(String nama){
         stockDonut = new HashMap<String,Donut>();
         this.nama = nama;
+    }
+
+    public String toString(){
+        return this.stockDonut.toString();
     }
 
     String getNama(){
@@ -86,7 +97,7 @@ class DonutStore {
         // Kurangin stocknya
         if(this.stockDonut.get(jenisDonut).getStock() > 0){
             // kurangin stock nya by 1
-            this.stockDonut.get(jenisDonut).transferStock(1);
+            this.stockDonut.get(jenisDonut).transferStock(jumlahMeledak);
         }
     }
 
@@ -151,7 +162,12 @@ public class Tp1 {
             int targetChocoChips = Integer.parseInt(br.readLine().split(" ")[1]);
 
             // ITUNG ALGO NYAA
-            countPermutation(chipsList, target);
+            // countPermutation();
+            // PRINT LIST TOKO DONUT
+            bw.write(donutStores.toString());
+            bw.write("\n");
+            bw.flush();
+            // PANGGIL FUNCTION
 
             // Baca Duar
             int jumlahDuar = Integer.parseInt(br.readLine().split(" ")[1]);
@@ -180,20 +196,26 @@ public class Tp1 {
                 // Transfer
                 donutStores.get(detailTransfer[0]).transferDonut(donutStores.get(detailTransfer[1]), detailTransfer[2], Integer.parseInt(detailTransfer[3]));
             }
+            // Tes Tulis
+
+            bw.write(donutStores.toString());
+            bw.write("\n");
+            bw.flush();
 
             // Akhir hari. Set semua toko jadi tutup
             for(Map.Entry<String,DonutStore> entry : donutStores.entrySet()){
                 entry.getValue().bukaTutupToko(false);
             }
         }
-        // Outputs the result
-        bw.write(Arrays.asList());
     }
-
     // Itung algonya
-    public static void countPermutation(int[] chipsList, int target, int[] donutQuantity){
+    public static void countPermutation(int[] chipsList, int target, int[] donutQuantity, int counter){
         // TODO
-        bw.write("hello");
-        bw.flush();
+        // If (counter < donutQuantity.length):
+            // base case if(target == 0): return 1
+            // else if (target < 0): return 0
+            // else
+                // iterate donut quantity
+                // recursive countPermutation(chipList,target-(chipList[counter]*i),donutQuantity,counter+1)
     }
 }
