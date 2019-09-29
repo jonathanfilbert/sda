@@ -136,6 +136,10 @@ class DonutStore {
 }
 
 public class Tp1 {
+
+    // Bikin bank nya sesuai max kemungkinan
+    static long[][] bank = new long[600][600];
+    static boolean[][] checkBank = new boolean[600][600];
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
@@ -193,6 +197,7 @@ public class Tp1 {
                     }
                 }
             }
+
             // Itung
             long result = countPermutation(chipArray, targetChocoChips, quantityArray, 0) % 1000000007;
             jawaban.add(result);
@@ -246,7 +251,7 @@ public class Tp1 {
             // else
                 // iterate donut quantity
                 // recursive countPermutation(chipList,target-(chipList[counter]*i),donutQuantity,counter+1)
-        int result = 0;
+        long result = 0;
         // Kalo target < 0 return 0
         if(target < 0){
             return 0;
@@ -259,15 +264,45 @@ public class Tp1 {
         // Kalo target masih > 0
         else{
             if(counter < donutQuantity.size()){
-                            // Iterate semua donat
+            // Iterate semua donat
             for(int i = 0; i<=donutQuantity.get(counter);i++){
                 // Kalo counter udah diatas length, break
-                if(counter >= donutQuantity.size()){
+                if(counter == donutQuantity.size()){
                     break;
                 }
-                // Kalo belom, terusss
+                else if(target < 0){
+                    return 1;
+                }
+                // Kalo belom, recursive case
                 else{
-                    result += countPermutation(chipsList, target - (chipsList.get(counter)*i), donutQuantity, counter+1);
+                    // If biar gaada overflow
+                    if(counter+1 == donutQuantity.size()){
+                        break;
+                    }
+                    else{
+                        // Menghindari overflow lagi untuk target-chips*i
+                        if(target-chipsList.get(counter)*i < 0){
+                            break;
+                        }
+                        else{
+                    // Kalo dia belom ada
+                    if(checkBank[counter+1][target-(chipsList.get(counter)*i)] == false){
+                        // Jadiin value di checkBank true
+                        checkBank[counter+1][target-(chipsList.get(counter)*i)] = true;
+                        // Tambahin ke resultnya
+                        long temp = countPermutation(chipsList, target - (chipsList.get(counter)*i), donutQuantity, counter+1);
+                        // Store valuenya ke bank
+                        bank[counter+1][target-(chipsList.get(counter)*i)] = temp;
+                        // Accumulate
+                        result+=temp;
+                    }
+                    // Kalo dia udah ada
+                    else{
+                        result+= bank[counter+1][target-(chipsList.get(counter)*i)];
+                    }
+                        }
+
+                    }
             }
         }
             }
