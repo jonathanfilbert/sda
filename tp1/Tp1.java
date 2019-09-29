@@ -59,7 +59,7 @@ class DonutStore {
     }
 
     public String toString(){
-        return this.stockDonut.toString();
+        return ("Status: "+ Boolean.toString(this.getStatus()) + this.stockDonut.toString());
     }
 
     String getNama(){
@@ -183,7 +183,6 @@ public class Tp1 {
             // Bikin array semua quantity dan chips donut
             ArrayList<Integer> quantityArray = new ArrayList<Integer>();
             ArrayList<Integer> chipArray = new ArrayList<Integer>();
-
             // Iterate semua toko
             for(Map.Entry<String, DonutStore> toko : donutStores.entrySet()){
                 // Kalo tokonya buka
@@ -197,10 +196,13 @@ public class Tp1 {
                     }
                 }
             }
-
+            System.out.println(Arrays.toString(quantityArray.toArray()));
+            System.out.println(Arrays.toString(chipArray.toArray()));
             // Itung
-            long result = countPermutation(chipArray, targetChocoChips, quantityArray, 0) % 1000000007;
+            long result = countPermutation(chipArray, targetChocoChips, quantityArray, 0);
             jawaban.add(result);
+
+            System.out.println(donutStores);
 
             // Baca Duar
             int jumlahDuar = Integer.parseInt(br.readLine().split(" ")[1]);
@@ -234,6 +236,9 @@ public class Tp1 {
             for(Map.Entry<String,DonutStore> entry : donutStores.entrySet()){
                 entry.getValue().bukaTutupToko(false);
             }
+            // Clears the result
+            // quantityArray.clear();
+            // chipArray.clear();
         }
         // Loop through the answer dan print
         for(int i = 0; i< jawaban.size();i++){
@@ -251,62 +256,54 @@ public class Tp1 {
             // else
                 // iterate donut quantity
                 // recursive countPermutation(chipList,target-(chipList[counter]*i),donutQuantity,counter+1)
-        long result = 0;
-        // Kalo target < 0 return 0
-        if(target < 0){
-            return 0;
-        }
-        // Another target 0 return 1
-        else if(target == 0){
+        long answer = 0;
+        // Base case
+        // Kalo target 0, return 1
+        if(target == 0){
             return 1;
         }
-        // Recursive case
-        // Kalo target masih > 0
+        // Kalo target nya dah minus, return 0 ga overflow
+        else if(target < 0){
+            return 0;
+        }
+        else if(counter == chipsList.size()){
+            return 0;
+        }
+        // Kalo target nya masi diatas 0, for loop
         else{
-            if(counter < donutQuantity.size()){
-            // Iterate semua donat
-            for(int i = 0; i<=donutQuantity.get(counter);i++){
-                // Kalo counter udah diatas length, break
-                if(counter == donutQuantity.size()){
+            // Mulai iterate jumlah donut nya
+            for(int i = 0; i<= donutQuantity.get(counter);i++){
+                // Kalo dikurangin dah minus, break
+                if(target - chipsList.get(counter)*i < 0){
                     break;
                 }
-                else if(target < 0){
-                    return 1;
+                // Kalau target-jumlahchips nya udah nol, diplus1
+                else if(target - chipsList.get(counter)*i == 0){
+                    answer+=1;
                 }
-                // Kalo belom, recursive case
+                // Kalao target-jumlahchips nya lebih dari nol, recursive
                 else{
-                    // If biar gaada overflow
-                    if(counter+1 == donutQuantity.size()){
-                        break;
+                    // Cek memo apakah udah ada atau belom?
+                    // Kalo udah ada
+                    if(checkBank[counter+1][target-chipsList.get(counter)*i] == true){
+                        // Return hasilnya di memo
+                        // return bank[counter+1][target-chipsList.get(counter)*i];
+                        answer = (answer + bank[counter+1][target-chipsList.get(counter)*i]) % 1000000007;
                     }
+                    // Kalo belom ada
                     else{
-                        // Menghindari overflow lagi untuk target-chips*i
-                        if(target-chipsList.get(counter)*i < 0){
-                            break;
-                        }
-                        else{
-                    // Kalo dia belom ada
-                    if(checkBank[counter+1][target-(chipsList.get(counter)*i)] == false){
-                        // Jadiin value di checkBank true
-                        checkBank[counter+1][target-(chipsList.get(counter)*i)] = true;
-                        // Tambahin ke resultnya
-                        long temp = countPermutation(chipsList, target - (chipsList.get(counter)*i), donutQuantity, counter+1);
-                        // Store valuenya ke bank
-                        bank[counter+1][target-(chipsList.get(counter)*i)] = temp;
-                        // Accumulate
-                        result+=temp;
+                        // Set memo jadi ada
+                        checkBank[counter+1][target-chipsList.get(counter)*i] = true;
+                        // Itung
+                        long temp = countPermutation(chipsList, target-chipsList.get(counter)*i, donutQuantity, counter+1);
+                        // Save ke memo
+                        bank[counter+1][target-chipsList.get(counter)*i] =temp;
+                        // Itung recursive
+                        answer = (answer + temp) % 1000000007;
                     }
-                    // Kalo dia udah ada
-                    else{
-                        result+= bank[counter+1][target-(chipsList.get(counter)*i)];
-                    }
-                        }
-
-                    }
+                }
             }
         }
-            }
-        }
-        return result;
+        return answer;
     }
 }
