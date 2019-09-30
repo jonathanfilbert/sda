@@ -10,6 +10,10 @@ import java.io.OutputStreamWriter;
 /**
  * Tp1
  */
+// Kolaborator:
+// Ide algo awal: Alvin Hariman, tapi saya modif idenya jadi ga semua dimasukkin ke 1 for loop,
+// instead dia cek dulu ada di memo atau engga, baru for loop
+
 // Class for the donut
 class Donut {
     private String namaDonut;
@@ -28,22 +32,27 @@ class Donut {
                 this.nilaiChocoChips));
     }
 
+    // method returns donut stock
     int getStock() {
         return this.jumlahStok;
     }
 
+    // Method sets the chip amount
     void setChips(int newChip) {
         this.nilaiChocoChips = newChip;
     }
 
+    // Method get the choco chips amount
     int getChocoChips() {
         return this.nilaiChocoChips;
     }
 
+    // Method adds the stock
     void recieveStock(int stock) {
         this.jumlahStok += stock;
     }
 
+    // Method that reduces the stock
     void transferStock(int stock) {
         if (this.jumlahStok > 0) {
             this.jumlahStok -= stock;
@@ -68,14 +77,17 @@ class DonutStore {
         return ("Status: " + Boolean.toString(this.getStatus()) + this.stockDonut.toString());
     }
 
+    // Returns the store name
     String getNama() {
         return this.nama;
     }
 
+    // Returns the store status
     boolean getStatus() {
         return this.sedangBuka;
     }
 
+    // Sets the store status
     void bukaTutupToko(boolean status) {
         this.sedangBuka = status;
     }
@@ -163,7 +175,6 @@ public class Tp1 {
     // Bikin bank nya sesuai max kemungkinan
     static long[][] bank = new long[600][600];
 
-    // Initialize with -1
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
@@ -173,12 +184,6 @@ public class Tp1 {
         // Bikin array semua quantity dan chips donut
         ArrayList<Integer> quantityArray = new ArrayList<Integer>();
         ArrayList<Integer> chipArray = new ArrayList<Integer>();
-        // initialize bank
-        for (int i = 0; i < bank.length; i++) {
-            for (int j = 0; j < bank.length; j++) {
-                bank[i][j] = -1;
-            }
-        }
         // Takes the amount of donut stores
         // Baca input N
         int banyakToko = Integer.parseInt(br.readLine());
@@ -201,7 +206,12 @@ public class Tp1 {
         int jumlahHari = Integer.parseInt(br.readLine());
         // Aktivitas per hari
         for (int i = 0; i < jumlahHari; i++) {
-            bw.write("--------Hari ke " + Integer.toString(i + 1) + " ----------" + "\n");
+            // initialize bank
+            for (int ii = 0; ii < bank.length; ii++) {
+                for (int jj = 0; jj < bank.length; jj++) {
+                    bank[ii][jj] = -1;
+                }
+            }
             // Baca Xi
             int jumlahTokoBuka = Integer.parseInt(br.readLine());
             if (jumlahTokoBuka > 0) {
@@ -218,11 +228,9 @@ public class Tp1 {
             for (Map.Entry<String, DonutStore> toko : donutStores.entrySet()) {
                 // Kalo tokonya buka
                 if (toko.getValue().getStatus() == true) {
-                    // Iterate semua donat di toko itu
-                    bw.write("-------- TOKO " + toko.getValue().getNama() + "-------" + "\n");
+                    // Iterate semua donat di toko itu;
                     for (Map.Entry<String, Donut> donat : toko.getValue().stockDonut.entrySet()) {
                         if (donat.getValue().getStock() > 0) {
-                            bw.write(donat.getValue().toString() + "\n");
                             // Add ke quantity array
                             quantityArray.add(donat.getValue().getStock());
                             // Add semua chips ke chipArray
@@ -261,7 +269,8 @@ public class Tp1 {
                 // Toko asal, toko tujuan, jenis donut, jumlah donut
                 String[] detailTransfer = br.readLine().split(" ");
                 // Transfer
-                donutStores.get(detailTransfer[0]).transferDonut(donutStores.get(detailTransfer[1]), detailTransfer[2], Integer.parseInt(detailTransfer[3]));
+                donutStores.get(detailTransfer[0]).transferDonut(donutStores.get(detailTransfer[1]), detailTransfer[2],
+                        Integer.parseInt(detailTransfer[3]));
             }
 
             // Akhir hari. Set semua toko jadi tutup
@@ -276,14 +285,14 @@ public class Tp1 {
         for (int i = 0; i < jawaban.size(); i++) {
             bw.write(Long.toString(jawaban.get(i)));
             bw.write("\n");
-            // bw.flush();
         }
+        // FLush
         bw.flush();
     }
 
     // Itung algonya
     public static long countPermutation(ArrayList<Integer> chipsList, int target, ArrayList<Integer> donutQuantity,
-        int counter) {
+            int counter) {
         long answer = 0;
         // Base case
         // Kalo target 0, return 1
@@ -305,8 +314,7 @@ public class Tp1 {
                 // Kalo gaada di memo, for loop
                 for (int i = 0; i <= donutQuantity.get(counter); i++) {
                     // Itung
-                    long temp = countPermutation(chipsList, target - chipsList.get(counter) * i, donutQuantity,
-                            counter + 1);
+                    long temp = countPermutation(chipsList, target - chipsList.get(counter) * i, donutQuantity,counter + 1);
                     // Tambahin jawbannya trus mod
                     answer = (answer + temp) % 1000000007;
                 }
@@ -315,6 +323,6 @@ public class Tp1 {
         // Set memo jadi jawabannya
         bank[counter][target] = answer;
         // Return jawabannya
-        return bank[counter][target];
+        return answer;
     }
 }
