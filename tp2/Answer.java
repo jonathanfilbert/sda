@@ -6,25 +6,13 @@ class Node{
     // A node has next, prev, and a value
     private Node next;
     private Node prev;
-    private Object value;
+    private Integer value;
 
     // When initialized, a node has next and prev of null, and a value of an int
     public Node(Integer value){
         this.next = null;
         this.prev = null;
         this.value = value;
-    }
-    // Constructor for LinkedList (overloading)
-    public Node(LinkedList value){
-        this.next = null;
-        this.prev = null;
-        this.value = value;
-    }
-    // Constructor for initialization null value
-    public Node(){
-        this.next = null;
-        this.prev = null;
-        this.value = null;
     }
     // Set next sets the next pointer of a node
     public void setNext(Node next){
@@ -55,8 +43,8 @@ class LinkedList{
     private int size;
     // Constructor
     public LinkedList(){
-        head = new Node();
-        tail = new Node();
+        head = new Node(null);
+        tail = new Node(null);
         size=0;
         current = head;
     }
@@ -67,6 +55,14 @@ class LinkedList{
         else{
             return false;
         }
+    }
+    // Sets heada
+    void setHead(Node newHead){
+        this.head = newHead;
+    }
+    // Sets tail
+    void setTail(Node newTail){
+        this.tail = newTail;
     }
     // Gets the head
     Node getHead(){
@@ -79,6 +75,10 @@ class LinkedList{
     // Gets the size of the linkedList
     int getSize(){
         return this.size;
+    }
+    // Sets the size
+    void addSize(int add){
+        this.size+=add;
     }
     // Add a node in front of a linkedList
     void inFront(Node newNode){
@@ -122,6 +122,17 @@ class LinkedList{
         // Set the tail's prev to the newNode
         this.tail.setPrev(newNode);
         }
+        // Kalo dia kosong
+        else{
+            // Tembah next ke tail
+            newNode.setNext(this.tail);
+            // Tembak prev ke head
+            newNode.setPrev(this.head);
+            // Tail's prev tembak ke node baru
+            this.tail.setPrev(newNode);
+            // Head's next tembak ke node baru
+            this.head.setNext(newNode);
+        }
         this.size+=1;
     }
     void outBack(Node newNode){
@@ -138,49 +149,51 @@ class LinkedList{
         this.tail.setNext(tujuan.getHead());
         // Set the tujuan's head's prev to the current tail
         tujuan.getHead().setPrev(this.tail);
+        // Jadiin head asal, head baru, tail dah bener
+        tujuan.setHead(this.head);
+        // Tambahin size tujuan dengan size asal
+        tujuan.addSize(this.size);
+        // Jadiin yang sekarang nol
+        this.size = 0;
     }
     void moveBack(LinkedList tujuan){
         // Set the current head's prev to the tujuan's tail
         this.head.setPrev(tujuan.getTail());
         // Set the tujuan's tail's next to the current head's
         tujuan.getTail().setNext(this.head);
+        // Ganti tail tujuan, jadi tail awal, head dah bener
+        tujuan.setTail(this.tail);
+        // Adds the tujuan's size
+        tujuan.addSize(this.size);
+        // Jadiin skrg size nya 0
+        this.size=0;
     }
 }
 
 // Untuk per rak donut
 public class RakDonat{
-    // Paling kiri
-    private Node head;
-    // Paling kanan
-    private Node tail;
-    // size of the rak
-    private int size;
-
+    private ArrayList<LinkedList> rak;
     // Constructor
     public RakDonat(){
-        // Bikin pointer untuk head dan tail
-        head = new Node();
-        tail = new Node();
-        size = 0;
+        // Bikin arrayList
+        rak = new ArrayList<LinkedList>();
     }
+    // Gets the baris donut fr9om the index baris
+    LinkedList getBaris(int baris){
+        return this.rak.get(baris);
+    }
+    // Adds a new baris to te rak
     void addBaris(LinkedList newBaris){
-        // If the size is empty
-        if(this.size == 0){
-            // Set the head's next to newBaris' head's prev
-            newBaris.getHead().setPrev(this.head);
-            this.head.setNext(newBaris.getHead());
-            // Set the newBaris' tail's next to tail's prev
-            newBaris.getTail().setNext(this.tail);
-            this.tail.setPrev(newBaris.getTail());
-        }
-        // If the size is not empty
-        else{
-            // Add ke paling belakang
-            // head.prev baru nunjuk ke tail.next yang lama
-            newBaris.getHead().setPrev(this.tail.getPrev());
-            newBaris.getTail().setNext(this.tail);
-            newBaris.getHead().getPrev().setNext(newBaris.getHead());
-            newBaris.getTail().getNext().setPrev(newBaris.getTail());
+        this.rak.add(newBaris);
+    }
+    // Make a method scan, which will scan the rak and delete the ones with size 0
+    void scanAndDelete(){
+        for(int i=0; i<this.rak.size();i++){
+            // Iterate the whole array
+            if(rak.get(i).getSize() == 0){
+                // If the size of the LL is 0, delete
+                this.rak.remove(i);
+            }
         }
     }
 }
