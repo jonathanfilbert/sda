@@ -72,6 +72,14 @@ class LinkedList{
     Node getTail(){
         return this.tail;
     }
+    // Get a node
+    Node getNode(int index){
+        this.current = this.head;
+        for(int i=0;i<index;i++){
+            current = current.getNext();
+        }
+        return current;
+    }
     // Gets the size of the linkedList
     int getSize(){
         return this.size;
@@ -135,7 +143,7 @@ class LinkedList{
         }
         this.size+=1;
     }
-    void outBack(Node newNode){
+    void outBack(){
         if(this.size>0){
         // Set the tail's prev to the 2nd last element
         this.tail.setPrev(this.tail.getPrev().getPrev());
@@ -178,6 +186,17 @@ public class RakDonat{
         // Bikin arrayList
         rak = new ArrayList<LinkedList>();
     }
+    // Method bikin 1 barisan baru yang isinya 1 donat chips N
+    void newBaris(int chips){
+        // Bikin baris baru
+        LinkedList newBaris = new LinkedList();
+        // Bikin donat baru
+        Node newDonut = new Node(chips);
+        // Masukin donat baru ke belakang barisan baru
+        newBaris.inBack(newDonut);
+        // Masukin barisan baru ke rak
+        this.rak.add(newBaris);
+    }
     // Gets the baris donut fr9om the index baris
     LinkedList getBaris(int baris){
         return this.rak.get(baris);
@@ -196,6 +215,10 @@ public class RakDonat{
             }
         }
     }
+    // Sorting algo
+    void sort(){
+        // TODO
+    }
 }
 
 public class Answer{
@@ -205,13 +228,15 @@ public class Answer{
         bw.write("Hello World");
         // Bikin raknyaa
         RakDonat rakDonat = new RakDonat();
+        // Baca jumlah baris donat
         int jumlahBarisan = Integer.parseInt(br.readLine());
         // Forloop berapa barisan dalam rak
         for(int i = 0; i<jumlahBarisan;i++){
             // Format: 3 10 7 14
             String[] inputDetails = br.readLine().split(" ");
             LinkedList barisanBaru = new LinkedList();
-            for(int j = 1; j< Integer.parseInt(inputDetails[0]);j++){
+            // Forloop sesuai jumlah donut di barisan
+            for(int j = 1; j< Integer.parseInt(inputDetails[0])+1;j++){
                 // Bikin node donut baru dengan value sesuai input
                 Node newDonut = new Node(Integer.parseInt(inputDetails[j]));
                 // Add donut nya ke belakang barisan
@@ -223,7 +248,46 @@ public class Answer{
         // Forloop jumlah perintah
         int jumlahPerintah = Integer.parseInt(br.readLine());
         for(int i = 0; i<jumlahPerintah;i++){
-
+            // Make a new donut for the operation
+            Node newDonut;
+            // Baca perintah
+            String[] perintah = br.readLine().split(" ");
+            switch(perintah[0]){
+                case "IN_FRONT":
+                newDonut = new Node(Integer.parseInt(perintah[1]));
+                rakDonat.getBaris(Integer.parseInt(perintah[2])).inFront(newDonut);
+                // IN_FRONT 0 2
+                break;
+                case "OUT_FRONT":
+                rakDonat.getBaris(Integer.parseInt(perintah[1])).outFront();
+                // OUT_FRONT 1
+                break;
+                case "IN_BACK":
+                newDonut = new Node(Integer.parseInt(perintah[1]));
+                rakDonat.getBaris(Integer.parseInt(perintah[2])).inBack(newDonut);
+                // IN_BACK 11 3
+                break;
+                case "OUT_BACK":
+                rakDonat.getBaris(Integer.parseInt(perintah[1])).outBack();
+                // OUT_BACK 2
+                break;
+                case "MOVE_FRONT":
+                rakDonat.getBaris(Integer.parseInt(perintah[1])).moveFront(rakDonat.getBaris(Integer.parseInt(perintah[2])));
+                // MOVE_FRONT 4 3
+                break;
+                case "MOVE_BACK":
+                rakDonat.getBaris(Integer.parseInt(perintah[1])).moveBack(rakDonat.getBaris(Integer.parseInt(perintah[2])));
+                // MOVE_BACK 4 3
+                break;
+                case "NEW":
+                rakDonat.newBaris(Integer.parseInt(perintah[1]));
+                // NEW 8
+                break;
+            }
+            // Scan and delete yang kosong kosong
+            rakDonat.scanAndDelete();
+            // Sort the rak
+            rakDonat.sort();
         }
         bw.flush();
     }
