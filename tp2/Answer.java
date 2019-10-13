@@ -267,13 +267,18 @@ class LinkedList implements Comparable<LinkedList> {
 
     // toString method
     public String toString() {
-        String ans = "- ";
+        String ans = "";
         if (this.size == 0) {
             return "Kosong";
         } else {
             Node current = this.head.getNext();
             for (int i = 0; i < this.size; i++) {
-                ans = ans + Integer.toString(current.getValue()) + " - ";
+                if(i != this.size-1){
+                    ans = ans + Integer.toString(current.getValue()) + " ";
+                }
+                else{
+                    ans = ans+ Integer.toString(current.getValue());
+                }
                 current = current.getNext();
             }
             return ans;
@@ -366,8 +371,7 @@ class RakDonat {
     public String toString() {
         String answer = "";
         for (int i = 0; i < rak.size(); i++) {
-            answer += rak.get(i).toString();
-            answer += "\n";
+            answer += rak.get(i).toString() + "\n";
         }
         return answer;
     }
@@ -397,8 +401,8 @@ public class Answer {
             rakDonat.addBaris(barisanBaru);
         }
         // PRINT SEBELUM
-        bw.write(rakDonat.toString());
-        bw.write("----------------------\n");
+        // bw.write(rakDonat.toString());
+        // bw.write("----------------------\n");
         // Forloop jumlah perintah
         int jumlahPerintah = Integer.parseInt(br.readLine());
         for (int i = 0; i < jumlahPerintah; i++) {
@@ -445,9 +449,9 @@ public class Answer {
             // Sort the rak
             rakDonat.sort();
             // Print the rak
-            bw.write(rakDonat.toString());
-            bw.write("----------------------\n");
+            // bw.write("----------------------\n");
         }
+        bw.write(rakDonat.toString());
         bw.flush();
     }
 }
