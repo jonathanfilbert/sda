@@ -350,7 +350,7 @@ public class Answer{
                 // MOVE_BACK 4 3
                 break;
                 case "NEW":
-                rakDonat.newBaris(Integer.parseInt(perintah[1])-1);
+                rakDonat.newBaris(Integer.parseInt(perintah[1]));
                 // NEW 8
                 break;
             }
@@ -358,9 +358,10 @@ public class Answer{
             rakDonat.scanAndDelete();
             // Sort the rak
             // rakDonat.sort();
-        }
         // Print the rak
         bw.write(rakDonat.toString());
+        bw.write("----------------------\n");
+        }
         bw.flush();
     }
 }
