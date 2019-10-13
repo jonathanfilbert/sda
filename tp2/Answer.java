@@ -29,13 +29,17 @@ class Node{
         return this.next;
     }
     // getValue gets the value of a node
-    public Object getValue(){
+    public int getValue(){
         return this.value;
+    }
+    // To string
+    public String toString(){
+        return Integer.toString(this.value);
     }
 }
 
 // Untuk barisan
-class LinkedList{
+class LinkedList implements Comparable<LinkedList>{
     // A linkedList has a head node, tail node, and an int size
     private Node head;
     private Node tail;
@@ -153,33 +157,88 @@ class LinkedList{
         this.size-=1;
     }
     void moveFront(LinkedList tujuan){
-        // Set the current tail's next to the tujuan's head
-        this.tail.setNext(tujuan.getHead());
-        // Set the tujuan's head's prev to the current tail
-        tujuan.getHead().setPrev(this.tail);
-        // Jadiin head asal, head baru, tail dah bener
-        tujuan.setHead(this.head);
-        // Tambahin size tujuan dengan size asal
+        // Set the dari last element tail's next to tujuan's 1st element
+        this.getTail().getPrev().setNext(tujuan.getHead().getNext());
+        // Set the 1st element from tujuan's prev to the dari last element
+        tujuan.getHead().getNext().setPrev(this.getTail().getPrev());
+        // jaga jaga
+        this.getTail().setNext(null);
+        this.getTail().setPrev(null);
+        tujuan.getHead().setNext(null);
+        tujuan.getHead().setPrev(null);
+        // Set the dari's head to be the new head
+        tujuan.setHead(this.getHead());
+        // Jadiin dari length jadi 0, adjust sizenya
         tujuan.addSize(this.size);
-        // Jadiin yang sekarang nol
-        this.size = 0;
+        this.size=0;
     }
     void moveBack(LinkedList tujuan){
-        // Set the current head's prev to the tujuan's tail
-        this.head.setPrev(tujuan.getTail());
-        // Set the tujuan's tail's next to the current head's
-        tujuan.getTail().setNext(this.head);
-        // Ganti tail tujuan, jadi tail awal, head dah bener
-        tujuan.setTail(this.tail);
-        // Adds the tujuan's size
+        // Set the dari's first element's prev to the tujuan's last element
+        this.head.getNext().setPrev(tujuan.getTail().getPrev());
+        // Set the tujuan's last element's next to the dari's  first element
+        tujuan.getTail().getPrev().setNext(this.head.getNext());
+        // jaga jaga
+        this.getHead().setPrev(null);
+        this.getHead().setNext(null);
+        tujuan.getTail().setNext(null);
+        tujuan.getTail().setPrev(null);
+        // Set the dari's tail to be the new tail
+        tujuan.setTail(this.getTail());
+        // Adjust the size
         tujuan.addSize(this.size);
-        // Jadiin skrg size nya 0
         this.size=0;
+    }
+    // CompareTo Method››
+    @Override
+    public int compareTo(LinkedList barisLain){
+        // Cari length yang lebih kecil, forloop sesuai terkecil
+        int length = 0;
+        int answer = 0;
+        if(this.size < barisLain.getSize()){
+            length = this.size;
+        }
+        else{
+            length = barisLain.getSize();
+        }
+        Node currentOne = this.getHead().getNext();
+        Node currentTwo = barisLain.getHead().getNext();
+        // Forloop sesuai terkecil
+        for(int i=0;i<length;i++){
+            // Kalo elemen terkecil ini lebih besar, return 1
+            if(currentOne.getValue() > currentTwo.getValue()){
+                answer=1;
+                break;
+            }
+            else if(currentOne.getValue() < currentTwo.getValue()){
+                answer = -1;
+                break;
+            }
+            else{
+                currentOne = currentOne.getNext();
+                currentTwo = currentTwo.getNext();
+            }
+        }
+        return answer;
+    }
+    // toString method
+    public String toString(){
+        String ans="- ";
+        if(this.size == 0){
+            return "Kosong";
+        }
+        else{
+            Node current = this.head.getNext();
+            for(int i=0;i<this.size;i++){
+                ans = ans + Integer.toString(current.getValue()) + " - ";
+                current = current.getNext();
+            }
+            return ans;
+        }
     }
 }
 
 // Untuk per rak donut
-public class RakDonat{
+ class RakDonat{
     private ArrayList<LinkedList> rak;
     // Constructor
     public RakDonat(){
@@ -219,13 +278,21 @@ public class RakDonat{
     void sort(){
         // TODO
     }
+    // toString
+    public String toString(){
+        String answer = "";
+        for(int i=0;i<rak.size();i++){
+            answer+=rak.get(i).toString();
+            answer+="\n";
+        }
+        return answer;
+    }
 }
 
 public class Answer{
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-        bw.write("Hello World");
         // Bikin raknyaa
         RakDonat rakDonat = new RakDonat();
         // Baca jumlah baris donat
@@ -245,6 +312,9 @@ public class Answer{
             // Setelah selesai isi semua ke barisan, add barisan ke rak
             rakDonat.addBaris(barisanBaru);
         }
+        // PRINT SEBELUM
+        bw.write(rakDonat.toString());
+        bw.write("----------------------\n");
         // Forloop jumlah perintah
         int jumlahPerintah = Integer.parseInt(br.readLine());
         for(int i = 0; i<jumlahPerintah;i++){
@@ -255,40 +325,42 @@ public class Answer{
             switch(perintah[0]){
                 case "IN_FRONT":
                 newDonut = new Node(Integer.parseInt(perintah[1]));
-                rakDonat.getBaris(Integer.parseInt(perintah[2])).inFront(newDonut);
+                rakDonat.getBaris(Integer.parseInt(perintah[2])-1).inFront(newDonut);
                 // IN_FRONT 0 2
                 break;
                 case "OUT_FRONT":
-                rakDonat.getBaris(Integer.parseInt(perintah[1])).outFront();
+                rakDonat.getBaris(Integer.parseInt(perintah[1])-1).outFront();
                 // OUT_FRONT 1
                 break;
                 case "IN_BACK":
                 newDonut = new Node(Integer.parseInt(perintah[1]));
-                rakDonat.getBaris(Integer.parseInt(perintah[2])).inBack(newDonut);
+                rakDonat.getBaris(Integer.parseInt(perintah[2])-1).inBack(newDonut);
                 // IN_BACK 11 3
                 break;
                 case "OUT_BACK":
-                rakDonat.getBaris(Integer.parseInt(perintah[1])).outBack();
+                rakDonat.getBaris(Integer.parseInt(perintah[1])-1).outBack();
                 // OUT_BACK 2
                 break;
                 case "MOVE_FRONT":
-                rakDonat.getBaris(Integer.parseInt(perintah[1])).moveFront(rakDonat.getBaris(Integer.parseInt(perintah[2])));
+                rakDonat.getBaris(Integer.parseInt(perintah[1])-1).moveFront(rakDonat.getBaris(Integer.parseInt(perintah[2])-1));
                 // MOVE_FRONT 4 3
                 break;
                 case "MOVE_BACK":
-                rakDonat.getBaris(Integer.parseInt(perintah[1])).moveBack(rakDonat.getBaris(Integer.parseInt(perintah[2])));
+                rakDonat.getBaris(Integer.parseInt(perintah[1])-1).moveBack(rakDonat.getBaris(Integer.parseInt(perintah[2])-1));
                 // MOVE_BACK 4 3
                 break;
                 case "NEW":
-                rakDonat.newBaris(Integer.parseInt(perintah[1]));
+                rakDonat.newBaris(Integer.parseInt(perintah[1])-1);
                 // NEW 8
                 break;
             }
             // Scan and delete yang kosong kosong
             rakDonat.scanAndDelete();
             // Sort the rak
-            rakDonat.sort();
+            // rakDonat.sort();
         }
+        // Print the rak
+        bw.write(rakDonat.toString());
         bw.flush();
     }
 }
