@@ -340,27 +340,23 @@ class RakDonat {
     }
 
     // Sorting algo
-    void sort() {
-        // TODO
-        // Implement comb sort
-        int size = this.rak.size();
-        int gap = size;
-        boolean swapped = true;
-        while (gap != 1 || swapped) {
-            gap = getNewGap(gap);
-            swapped = false;
-            // Comparations
-            for (int i = 0; i < size - gap; i++) {
-                if (this.rak.get(i).compareTo(this.rak.get(gap + i)) == 1) {
-                    // Swapping
-                    LinkedList temp = this.rak.get(i);
-                    this.rak.set(i, this.rak.get(gap + i));
-                    this.rak.set(gap + i, temp);
-                    swapped = true;
-                }
+    void sort(int unsortedPosition) {
+        // bikin counter
+        int counter = 0;
+        // Selama value index sekarang lebih kecil dar index yang ga ke sort dan masih in bound dari arraynya
+        while((counter < rak.size()) && (rak.get(counter).compareTo(rak.get(unsortedPosition)) != 1)){
+            // Increment terus
+            counter+=1;
             }
+            if(counter >= rak.size()){
+                rak.add(rak.get(unsortedPosition)); 
+            }
+            else{
+                rak.add(counter+1,rak.get(unsortedPosition));
+            } 
+            rak.remove(unsortedPosition); 
         }
-    }
+        
 
     // getSize
     int getSize() {
@@ -401,57 +397,69 @@ public class Answer {
             rakDonat.addBaris(barisanBaru);
         }
         // PRINT SEBELUM
-        // bw.write(rakDonat.toString());
-        // bw.write("----------------------\n");
+        bw.write(rakDonat.toString());
+        bw.write("----------------------\n");
         // Forloop jumlah perintah
         int jumlahPerintah = Integer.parseInt(br.readLine());
         for (int i = 0; i < jumlahPerintah; i++) {
             // Make a new donut for the operation
             Node newDonut;
+            // Make variable for the unsorted index
+            int unsorted = 0;
             // Baca perintah
             String[] perintah = br.readLine().split(" ");
             switch (perintah[0]) {
             case "IN_FRONT":
                 newDonut = new Node(Integer.parseInt(perintah[1]));
                 rakDonat.getBaris(Integer.parseInt(perintah[2]) - 1).inFront(newDonut);
+                unsorted = Integer.parseInt(perintah[2])-1;
                 // IN_FRONT 0 2
                 break;
             case "OUT_FRONT":
                 rakDonat.getBaris(Integer.parseInt(perintah[1]) - 1).outFront();
+                unsorted = Integer.parseInt(perintah[1]) -1;
                 // OUT_FRONT 1
                 break;
             case "IN_BACK":
                 newDonut = new Node(Integer.parseInt(perintah[1]));
                 rakDonat.getBaris(Integer.parseInt(perintah[2]) - 1).inBack(newDonut);
+                unsorted = Integer.parseInt(perintah[2]) -1;
                 // IN_BACK 11 3
                 break;
             case "OUT_BACK":
                 rakDonat.getBaris(Integer.parseInt(perintah[1]) - 1).outBack();
+                unsorted = Integer.parseInt(perintah[1]) -1;
                 // OUT_BACK 2
                 break;
             case "MOVE_FRONT":
                 rakDonat.getBaris(Integer.parseInt(perintah[1]) - 1)
                         .moveFront(rakDonat.getBaris(Integer.parseInt(perintah[2]) - 1));
+                unsorted = Integer.parseInt(perintah[2])-1;
                 // MOVE_FRONT 4 3
                 break;
             case "MOVE_BACK":
                 rakDonat.getBaris(Integer.parseInt(perintah[1]) - 1)
                         .moveBack(rakDonat.getBaris(Integer.parseInt(perintah[2]) - 1));
+                unsorted = Integer.parseInt(perintah[2])-1;
                 // MOVE_BACK 4 3
                 break;
             case "NEW":
                 rakDonat.newBaris(Integer.parseInt(perintah[1]));
+                unsorted = rakDonat.getSize();
                 // NEW 8
                 break;
             }
-            // Scan and delete yang kosong kosong
-            rakDonat.scanAndDelete();
+            // rakDonat.scanAndDelete();
             // Sort the rak
-            rakDonat.sort();
+            rakDonat.sort(unsorted);
+            // Scan and delete yang kosong kosong
+            rakDonat.scanAndDelete();            
             // Print the rak
-            // bw.write("----------------------\n");
+            bw.write("----------------------\n");
+            bw.write(rakDonat.toString());
+            bw.write("----------------------\n");
         }
-        bw.write(rakDonat.toString());
+        // bw.write(rakDonat.toString());
         bw.flush();
     }
 }
