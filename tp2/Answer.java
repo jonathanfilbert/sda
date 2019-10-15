@@ -266,23 +266,17 @@ class LinkedList implements Comparable<LinkedList> {
     }
 
     // toString method
-    public String toString() {
-        String ans = "";
-        if (this.size == 0) {
-            return "Kosong";
-        } else {
+    public void print() throws IOException {
             Node current = this.head.getNext();
             for (int i = 0; i < this.size; i++) {
                 if(i != this.size-1){
-                    ans = ans + Integer.toString(current.getValue()) + " ";
+                    Answer.bw.write(Integer.toString(current.getValue()) + " ");
                 }
                 else{
-                    ans = ans+ Integer.toString(current.getValue());
+                    Answer.bw.write(Integer.toString(current.getValue()));
                 }
                 current = current.getNext();
             }
-            return ans;
-        }
     }
 }
 
@@ -339,7 +333,7 @@ class RakDonat {
         }
     }
 
-    // Sorting algo
+    // Sorting algo, Shell but not relaly
     void sort() {
         // TODO
         // Implement comb sort
@@ -368,19 +362,19 @@ class RakDonat {
     }
 
     // toString
-    public String toString() {
-        String answer = "";
+    public void print() throws IOException {
         for (int i = 0; i < rak.size(); i++) {
-            answer += rak.get(i).toString() + "\n";
+            rak.get(i).print();
+            Answer.bw.write("\n");
         }
-        return answer;
     }
 }
 
 public class Answer {
+    static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
     public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
         // Bikin raknyaa
         RakDonat rakDonat = new RakDonat();
         // Baca jumlah baris donat
@@ -451,7 +445,7 @@ public class Answer {
             // Print the rak
             // bw.write("----------------------\n");
         }
-        bw.write(rakDonat.toString());
-        bw.flush();
+        rakDonat.print();
+        Answer.bw.flush();
     }
 }
