@@ -333,26 +333,18 @@ class RakDonat {
         }
     }
 
-    // Sorting algo, Shell but not relaly
     void sort() {
-        // TODO
-        // Implement comb sort
-        int size = this.rak.size();
-        int gap = size;
-        boolean swapped = true;
-        while (gap != 1 || swapped) {
-            gap = getNewGap(gap);
-            swapped = false;
-            // Comparations
-            for (int i = 0; i < size - gap; i++) {
-                if (this.rak.get(i).compareTo(this.rak.get(gap + i)) == 1) {
-                    // Swapping
-                    LinkedList temp = this.rak.get(i);
-                    this.rak.set(i, this.rak.get(gap + i));
-                    this.rak.set(gap + i, temp);
-                    swapped = true;
-                }
+        // Insertion sort implementation
+        int size = this.getSize();
+        // Forloop dari index 1 sampe abis
+        for(int i=1;i<size;i++){
+            LinkedList compared = this.rak.get(i);
+            int j = i-1;
+            while(j>=0 && this.rak.get(j).compareTo(compared)==1){
+                this.rak.set(j+1, this.rak.get(j));
+                j-=1;
             }
+            this.rak.set(j+1, compared);
         }
     }
 
