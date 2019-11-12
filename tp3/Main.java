@@ -169,6 +169,8 @@ public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        // ArrayList provinsi
+        ArrayList<String> provinsi = new ArrayList<String>();
         // Input nama donat
         String[] namaDonat = br.readLine().split(" ");
         // Jumlah selain kelurahan yang mengadakan pemilu
@@ -185,6 +187,11 @@ public class Main {
             treeDaerah.insert(daerah1);
             // Forloop anak daerahnya
             for (int j = 2; j < detailDaerah.length; j++) {
+                // Kalo dia yang pertama
+                if (i == 0) {
+                    // Masukin ke provinsi
+                    provinsi.add(detailDaerah[j]);
+                }
                 // Bikin node baru buat anaknya
                 Node daerahAnak = new Node(detailDaerah[j]);
                 // Masukan anak baru ke tree pusat
@@ -193,6 +200,7 @@ public class Main {
                 treeDaerah.setParent(daerahAnak, detailDaerah[0]);
             }
         }
+        bw.write(Arrays.toString(provinsi.toArray()) + "\n");
         bw.write(treeDaerah.printAllParentRelationships());
 
         bw.flush();

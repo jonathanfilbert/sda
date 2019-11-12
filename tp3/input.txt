@@ -1,5 +1,11 @@
 VANILLA TIRAMISU
-3
-Indo 1 Jakarta
-Jakarta 2 Jakbar Jaktim
-Jakbar 1 Puri
+9
+Indo 2 Jakarta Jabar
+Jakarta 1 Jaksel
+Jabar 2 Depok Bekasi
+Jaksel 1 C0
+Depok 1 C1
+Bekasi 1 C2
+C0 2 L0 L1
+C1 1 L2
+C2 1 L3
