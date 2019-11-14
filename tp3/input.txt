@@ -1,11 +1,29 @@
 VANILLA TIRAMISU
-9
-Indo 2 Jakarta Jabar
-Jakarta 1 Jaksel
-Jabar 2 Depok Bekasi
+12
+Indo 3 Jakarta Jabar Jatim
+Jakarta 2 Jaksel Jakbar
+Jabar 1 Depok
+Jatim 1 Malang
 Jaksel 1 C0
-Depok 1 C1
-Bekasi 1 C2
-C0 2 L0 L1
-C1 1 L2
-C2 1 L3
+Jakbar 1 C1
+Depok 1 C2
+Malang 1 C3
+C0 1 L0
+C1 1 L1
+C2 3 L2 L3 L4
+C3 1 L5
+14
+TAMBAH L0 5 5
+ANULIR L0 5 5
+TAMBAH L1 5 5
+ANULIR L1 5 5
+TAMBAH L2 5 5
+ANULIR L2 5 5
+TAMBAH L3 5 5
+ANULIR L3 5 5
+TAMBAH L4 5 5
+ANULIR L4 5 5
+TAMBAH L5 5 5
+ANULIR L5 5 5
+WILAYAH_MINIMAL VANILLA 50
+WILAYAH_MINIMAL VANILLA 51
