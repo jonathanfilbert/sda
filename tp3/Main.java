@@ -52,8 +52,8 @@ class Node {
     }
 
     // get suara provinsi
-    String suaraProvinsi() {
-        return (String.format("%s %d %d", this.name, this.suaraDonat1, this.suaraDonat2));
+    void suaraProvinsi() throws IOException {
+        Main.bw.write(this.name + " " + this.suaraDonat1 + " " + this.suaraDonat2 + "\n");
     }
 
     // return abs selisihnya
@@ -160,7 +160,7 @@ class Tree {
     String printAllDaerah() {
         String res = "";
         for (String daerah : this.allDaerah.keySet()) {
-            res += String.format("%s: %s", daerah, this.allDaerah.get(daerah).toString());
+            res += daerah + this.allDaerah.get(daerah).toString();
             res += "\n";
         }
         return res;
@@ -224,9 +224,8 @@ class Tree {
         }
     }
 
-    String cekSuara(String daerah) {
-        Node daerahNode = this.allDaerah.get(daerah);
-        return daerahNode.cekSuara();
+    void cekSuara(String daerah) throws IOException {
+        Main.bw.write(this.allDaerah.get(daerah).cekSuara() + "\n");
     }
 
     void persenBefore(Node daerah) {
@@ -298,24 +297,24 @@ class Tree {
     }
 
     // Cek menang
-    Integer cekMenang(int nomor) {
+    void cekMenang(int nomor) throws IOException {
         // Size array dari donat tsb
         // j
-        return this.kamusMenang.get(nomor).size();
+        Main.bw.write(this.kamusMenang.get(nomor).size() + "\n");
     }
 
     // Count semua daerah yang selisihnya sama kek selisih
-    Integer jumlahSelisih(Long selisih) {
+    void jumlahSelisih(Long selisih) throws IOException {
         int counter = 0;
         for (String nama : this.allDaerah.keySet()) {
             if (this.allDaerah.get(nama).selisih() >= selisih) {
                 counter += 1;
             }
         }
-        return counter;
+        Main.bw.write(counter + "\n");
     }
 
-    Integer wilayahMinimal(int kodeDonat, int persenMinimal) {
+    void wilayahMinimal(int kodeDonat, int persenMinimal) throws IOException {
         Integer[] arrayWilayah;
         // Pilih array donat sesuai dengan yang diminta
         if (kodeDonat == 0) {
@@ -328,16 +327,18 @@ class Tree {
         for (int i = persenMinimal; i < 101; i++) {
             sum += arrayWilayah[i];
         }
-        return sum;
+        Main.bw.write(sum + "\n");
     }
 
 }
 
 public class Main {
 
+    static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
     public static void main(String[] args) throws IOException {
+        // long startTime = System.nanoTime();
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
         // ArrayList provinsi
         ArrayList<String> provinsi = new ArrayList<String>();
         // Input nama donat
@@ -386,25 +387,29 @@ public class Main {
                 treeDaerah.anulir(operasi[1], Long.parseLong(operasi[2]), Long.parseLong(operasi[3]));
                 break;
             case "CEK_SUARA":
-                bw.write(treeDaerah.cekSuara(operasi[1]) + "\n");
+                treeDaerah.cekSuara(operasi[1]);
                 break;
             case "WILAYAH_MENANG":
-                bw.write(treeDaerah.cekMenang(mapDonat.get(operasi[1])) + "\n");
+                treeDaerah.cekMenang(mapDonat.get(operasi[1]));
                 break;
             case "CEK_SUARA_PROVINSI":
                 for (int j = 0; j < provinsi.size(); j++) {
                     Node nodeProvinsi = treeDaerah.getNode(provinsi.get(j));
-                    bw.write(nodeProvinsi.suaraProvinsi() + "\n");
+                    nodeProvinsi.suaraProvinsi();
                 }
                 break;
             case "WILAYAH_SELISIH":
-                bw.write(treeDaerah.jumlahSelisih(Long.parseLong(operasi[1])) + "\n");
+                treeDaerah.jumlahSelisih(Long.parseLong(operasi[1]));
                 break;
             case "WILAYAH_MINIMAL":
-                bw.write(treeDaerah.wilayahMinimal(mapDonat.get(operasi[1]), Integer.parseInt(operasi[2])) + "\n");
+                treeDaerah.wilayahMinimal(mapDonat.get(operasi[1]), Integer.parseInt(operasi[2]));
+                break;
             }
         }
         // End
-        bw.flush();
+        Main.bw.flush();
+        // long endTime = System.nanoTime();
+        // long totalTime = endTime - startTime;
+        // System.out.println(TimeUnit.NANOSECONDS.toSeconds(totalTime));
     }
 }
