@@ -1,10 +1,7 @@
 
 /**
  * Main
- * Jonathan Filbert | 2019
- * Beberapa method hasil diskusi dengan Alvin Hariman , Rony A. Vian, Christopher Samuel, dan Adrian Wijaya
  */
-
 import java.io.*;
 import java.util.*;
 
@@ -31,8 +28,9 @@ class Edge implements Comparable<Edge> {
         return this.to;
     }
 
-    // CompareTo
+    // TODO COMPARABLE WEIGHT
     public int compareTo(Edge otherEdge) {
+        // TODO
         if (this.weight > otherEdge.getWeight()) {
             return 1;
         } else if (this.weight == otherEdge.getWeight()) {
@@ -52,36 +50,110 @@ class Graph {
         this.edgeList = new HashMap<Integer, ArrayList<Edge>>();
     }
 
-    int[] djikstra(int from) {
-        // initialization
+    // int djikstraHelper(int[] result, boolean[] vertexInShortestPath) {
+    // // TODO
+    // int min = Integer.MAX_VALUE;
+    // int minIndex = -1;
+
+    // for (int i = 0; i < this.numberOfVertices; i++) {
+    // if (vertexInShortestPath[i] == false && result[i] <= min) {
+    // min = result[i];
+    // minIndex = i;
+    // }
+    // }
+    // return minIndex;
+
+    // }
+
+    // void djikstra(int start, int end, HashMap<Integer, ArrayList<Edge>> adjMap) {
+    // // Priotity Queue
+    // PriorityQueue<Edge> pq = new PriorityQueue<Edge>();
+    // // result array
+    // int[] result = new int[this.numberOfVertices + 1];
+    // boolean[] vertexInShortestPath = new boolean[this.numberOfVertices + 1];
+    // for (int i = 0; i < this.numberOfVertices; i++) {
+    // result[i] = Integer.MAX_VALUE;
+    // vertexInShortestPath[i] = false;
+    // }
+
+    // // distance source = 0
+    // result[start] = 0;
+
+    // // find shortest path to all vertex from start vertex
+    // for (int i = 0; i < this.numberOfVertices - 1; i++) {
+    // int initialVertex = djikstraHelper(result, vertexInShortestPath);
+    // vertexInShortestPath[initialVertex] = true;
+    // for (int j = 0; j < this.numberOfVertices; j++) {
+    // if (!vertexInShortestPath[j] && adjMap.get(initialVertex).get(j).getTo() != 0
+    // && vertexInShortestPath[initialVertex] != Integer.MAX_VALUE
+    // && vertexInShortestPath[initialVertex]
+    // + adjMap.get(initialVertex).get(j).getTo() < vertexInShortestPath[j]) {
+    // // TODO
+    // vertexInShortestPath[j] = vertexInShortestPath[initialVertex]
+    // + adjMap.get(initialVertex).get(j).getTo();
+    // }
+    // }
+    // }
+
+    // }
+
+    int[] dijkstra(int from, int to) {
         PriorityQueue<Edge> pq = new PriorityQueue<Edge>();
-        int[] distanceArray = new int[this.numberOfVertices + 1];
-        int initialNode = from;
-        // set isi distance array jadi infinity
-        Arrays.fill(distanceArray, Integer.MAX_VALUE);
-        // jarak ke diri sendiri = 0
-        distanceArray[0] = 0;
-        distanceArray[from] = 0;
-        Edge initialEdge = new Edge(0, initialNode, 0);
-        pq.add(initialEdge);
-        // START BFS
+        boolean[] visitedCities = new boolean[this.numberOfVertices + 1];
+        int[] distance = new int[this.numberOfVertices + 1];
+        boolean arrived = false;
+
+        int current = from;
+        visitedCities[current] = true;
+        distance[current] = 0;
+        // forloop start
+        for (int i = 0; i < this.edgeList.get(current).size(); i++) {
+            pq.add(this.edgeList.get(current).get(i));
+            distance[this.edgeList.get(current).get(i).getTo()] = distance[current]
+                    + this.edgeList.get(current).get(i).getWeight();
+        }
+        // BFS with Dijkstra
         while (!pq.isEmpty()) {
-            Edge current = pq.poll();
-            // forloop semua tetangga dari current Edge
-            if (edgeList.get(current.getTo()) == null) {
-                continue;
-            }
-            for (int i = 0; i < edgeList.get(current.getTo()).size(); i++) {
-                // Masukin edge neighbor ke pq
-                Edge targetEdge = edgeList.get(current.getTo()).get(i);
-                if (distanceArray[targetEdge.getTo()] > targetEdge.getWeight() + distanceArray[current.getTo()]) {
-                    // Update value
-                    distanceArray[targetEdge.getTo()] = targetEdge.getWeight() + distanceArray[current.getTo()];
-                    pq.add(targetEdge);
+            Edge currentEdge = pq.poll();
+            // for semua edge dari tujuan edge
+            for (int i = 0; i < this.edgeList.get(currentEdge.getTo()).size(); i++) {
+                // Kalo node di edge nya belom pernah dikunjungin
+                if (!visitedCities[this.edgeList.get(currentEdge.getTo()).get(i).getTo()]) {
+                    // set jadi pernah
+                    visitedCities[this.edgeList.get(currentEdge.getTo()).get(i).getTo()] = true;
+                    // masukin ke pq
+                    pq.add(this.edgeList.get(currentEdge.getTo()).get(i));
+                    // distance[node] = distance[previous] + weight
+                    distance[this.edgeList.get(currentEdge.getTo()).get(i).getTo()] = distance[currentEdge.getTo()]
+                            + currentEdge.getWeight();
+
+                    // Kalo dia udah sampe to, set jadi true
+                    if (this.edgeList.get(currentEdge.getTo()).get(i).getTo() == to) {
+                        arrived = true;
+                    }
+
+                }
+                // Kalo dia udah pernah
+                else {
+                    // Kalo distancenya node > distance current + weight
+                    if (distance[this.edgeList.get(currentEdge.getTo()).get(i).getTo()] > distance[currentEdge.getTo()]
+                            + currentEdge.getWeight()) {
+                        // distance next = distance node + weight
+                        distance[this.edgeList.get(currentEdge.getTo()).get(i).getTo()] = distance[currentEdge.getTo()]
+                                + currentEdge.getWeight();
+                        // add ke pq
+                        pq.add(this.edgeList.get(currentEdge.getTo()).get(i));
+                    }
                 }
             }
+
         }
-        return distanceArray;
+        // Kalo dia ga nyampe, return -1
+        if (arrived == false) {
+            distance[to] = -1;
+        }
+        System.out.println(Arrays.toString(distance));
+        return distance;
     }
 
     void print() {
@@ -144,7 +216,8 @@ class Graph {
                 visitedCities[current] = true;
                 // KAlo current nya itu gapunya anak return 1
                 if (edgeList.get(current) == null) {
-                    visitedCities[current] = true;
+                    System.out.println("ha");
+                    return 1;
                 } else {
                     // Cari adjacent edges dari kota skrg
                     ArrayList<Edge> adjacentCities = this.edgeList.get(current);
@@ -294,7 +367,6 @@ class Graph {
                         edgeQueue.add(adjacentCities.get(i).getTo());
                     }
                     // Masukin ke queue
-                    // countArray[adjacentCities.get(i).getTo()] += countArray[current] % 10001;
                     countArray[adjacentCities.get(i).getTo()] = (countArray[adjacentCities.get(i).getTo()] % 10001
                             + countArray[current] % 10001) % 10001;
                     distanceArray[adjacentCities.get(i).getTo()] = distanceArray[current] + 1;
@@ -305,18 +377,18 @@ class Graph {
     }
 }
 
-public class Main {
-    static BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-    static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+public class Alghi {
 
     public static void main(String[] args) throws IOException {
-        String[] programDetails = Main.br.readLine().split(" ");
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String[] programDetails = br.readLine().split(" ");
         // Buat graph nya
         Graph graph = new Graph(Integer.parseInt(programDetails[0]));
 
         // Forloop sesuai jumlah jalan raya / edge
         for (int i = 0; i < Integer.parseInt(programDetails[1]); i++) {
-            String[] jalanrayaArray = Main.br.readLine().split(" ");
+            String[] jalanrayaArray = br.readLine().split(" ");
             // Tambah edge nya ke graph
             graph.addKota(Integer.parseInt(jalanrayaArray[0]), Integer.parseInt(jalanrayaArray[1]),
                     Integer.parseInt(jalanrayaArray[2]));
@@ -324,54 +396,40 @@ public class Main {
 
         // Forloop perintah
         for (int i = 0; i < Integer.parseInt(programDetails[2]); i++) {
-            String[] perintahDetail = Main.br.readLine().split(" ");
+            String[] perintahDetail = br.readLine().split(" ");
             switch (perintahDetail[0]) {
             case "OS":
                 String[] openStores = Arrays.copyOfRange(perintahDetail, 1, perintahDetail.length);
-                Main.bw.write(Integer.toString(graph.openStore(openStores)) + "\n");
+                System.out.print(Integer.toString(graph.openStore(openStores)) + "\n");
                 break;
             case "CCWGD":
-                Main.bw.write(Integer.toString(graph.countCityWithGivenDistance(Integer.parseInt(perintahDetail[1]),
+                System.out.print(Integer.toString(graph.countCityWithGivenDistance(Integer.parseInt(perintahDetail[1]),
                         Integer.parseInt(perintahDetail[2]))) + "\n");
                 break;
             case "LAOR":
-                Main.bw.write(Integer.toString(graph.leastAmountOfRoad(Integer.parseInt(perintahDetail[1]),
+                // TODO
+                System.out.print(Integer.toString(graph.leastAmountOfRoad(Integer.parseInt(perintahDetail[1]),
                         Integer.parseInt(perintahDetail[2]))) + "\n");
                 break;
             case "LAORC":
-                Main.bw.write(Integer.toString(graph.leastAmountOfRoadCombination(Integer.parseInt(perintahDetail[1]),
-                        Integer.parseInt(perintahDetail[2]))) + "\n");
+                System.out
+                        .print(Integer.toString(graph.leastAmountOfRoadCombination(Integer.parseInt(perintahDetail[1]),
+                                Integer.parseInt(perintahDetail[2]))) + "\n");
+                // TODO
                 break;
             case "SR":
-                int result = graph.djikstra(Integer.parseInt(perintahDetail[1]))[Integer.parseInt(perintahDetail[2])];
-                if (result == Integer.MAX_VALUE) {
-                    Main.bw.write(Integer.toString(-1) + "\n");
-                } else {
-                    Main.bw.write(Integer.toString(result) + "\n");
-                }
+                // TODO
+                System.out.print("-\n");
+                // System.out.print(Integer.toString(graph.dijkstra(Integer.parseInt(perintahDetail[1]),
+                // Integer.parseInt(perintahDetail[2]))[Integer.parseInt(perintahDetail[2])]) +
+                // "\n");
                 break;
             case "SM":
-                int[] fromFrom = graph.djikstra(Integer.parseInt(perintahDetail[1]));
-                int[] fromTo = graph.djikstra(Integer.parseInt(perintahDetail[2]));
-                int[] resArray = new int[fromFrom.length];
-                int resultFinal = Integer.MAX_VALUE;
-
-                for (int j = 1; j < fromFrom.length; j++) {
-                    if (fromFrom[j] > fromTo[j]) {
-                        resArray[j] = fromFrom[j];
-                    } else {
-                        resArray[j] = fromTo[j];
-                    }
-                    if (resultFinal > resArray[j]) {
-                        resultFinal = resArray[j];
-                    }
-                }
-                Main.bw.write((resultFinal == Integer.MAX_VALUE || resultFinal == 0) ? Integer.toString(-1)
-                        : Integer.toString(resultFinal));
-                Main.bw.write("\n");
+                // TODO
+                System.out.print("-\n");
                 break;
             }
         }
-        Main.bw.flush();
+        // Main.bw.flush();
     }
 }
